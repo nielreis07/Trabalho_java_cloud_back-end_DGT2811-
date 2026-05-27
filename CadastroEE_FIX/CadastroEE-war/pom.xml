@@ -15,7 +15,6 @@
 
     <dependencies>
 
-        <!-- Java EE -->
         <dependency>
             <groupId>javax</groupId>
             <artifactId>javaee-api</artifactId>
@@ -23,7 +22,6 @@
             <scope>provided</scope>
         </dependency>
 
-        <!-- SOMENTE interfaces -->
         <dependency>
             <groupId>cadastroee</groupId>
             <artifactId>CadastroEE-ejb</artifactId>
