@@ -1,112 +1,247 @@
-# CadastroEE - Java EE 8
+# CadastroEE - Sistema de Cadastro de Produtos
 
-Projeto corporativo Java EE 8 utilizando:
+Projeto desenvolvido para a disciplina **DGT2811 - Desenvolvimento Back-End Corporativo com Java e Cloud**, utilizando tecnologias Java EE com arquitetura corporativa baseada em EAR, EJB e WAR.
 
-- EAR
+O sistema realiza o gerenciamento de produtos através de operações CRUD (Create, Read, Update e Delete), permitindo cadastrar, listar, alterar e excluir produtos persistidos em banco de dados SQL Server.
+
+---
+
+# Tecnologias Utilizadas
+
+## Back-end
+- Java 11
+- Java EE (javax)
 - EJB
-- WAR
-- JSP
+- JPA (EclipseLink)
 - Servlets
-- JPA
-- SQL Server
-- GlassFish 6
-- Java 17 a 21
-- Apenas javax.*
+- JSP
 
-## Estrutura
+## Banco de Dados
+- Microsoft SQL Server 2022
 
-CadastroEE/
-├── CadastroEE-ear
-├── CadastroEE-ejb
-├── CadastroEE-war
+## Servidor de Aplicação
+- Payara Server 5.2022.5
+
+## Build e Gerenciamento
+- Maven
+
+## Containerização
+- Docker
+- Docker Compose
+
+---
+
+# Estrutura do Projeto
+
+```text
+CadastroEE_FIX/
+│
+├── CadastroEE-ear/
+│   └── Módulo EAR principal
+│
+├── CadastroEE-ejb/
+│   └── Regras de negócio, entidades JPA e acesso a dados
+│
+├── CadastroEE-war/
+│   └── Interface Web JSP/Servlets
+│
+├── docker-compose.yml
+├── Dockerfile
 └── pom.xml
+```
 
-## Banco SQL Server
+---
 
-Execute:
+# Funcionalidades
+
+- Cadastro de produtos
+- Listagem de produtos
+- Alteração de produtos
+- Exclusão de produtos
+- Persistência em banco SQL Server
+- Deploy corporativo via EAR
+- Integração entre módulos EJB + WAR
+
+---
+
+# Arquitetura Utilizada
+
+O projeto segue uma arquitetura modular Java EE:
+
+- EAR → módulo principal de empacotamento
+- EJB → camada de negócio e persistência
+- WAR → camada web e interface JSP
+
+A aplicação utiliza:
+- JPA para persistência
+- JDBC Resource configurado no Payara
+- SQL Server executando em container Docker
+- Deploy EAR no servidor Payara
+
+---
+
+# Requisitos
+
+Para execução do projeto é necessário possuir instalado:
+
+- Docker
+- Docker Compose
+- Git
+- Java 11+ (caso queira executar localmente sem container)
+
+---
+
+# Como Executar o Projeto
+
+## 1. Clonar o repositório
+
+```bash
+git clone https://github.com/seu-usuario/CadastroEE.git
+```
+
+---
+
+## 2. Acessar a pasta do projeto
+
+```bash
+cd CadastroEE
+```
+
+---
+
+## 3. Subir os containers
+
+```bash
+docker compose up -d --build
+```
+
+---
+
+# Configuração do Banco de Dados
+
+## SQL Server
+
+- Host: `sqlserver`
+- Porta: `1433`
+- Usuário: `sa`
+- Senha: `SenhaForte123!`
+
+---
+
+# Banco utilizado
 
 ```sql
 CREATE DATABASE loja;
-GO
+```
 
-USE loja;
-GO
+---
 
+# Tabela utilizada
+
+```sql
 CREATE TABLE produto (
     id BIGINT IDENTITY(1,1) PRIMARY KEY,
     nome VARCHAR(255),
     quantidade INT,
     preco_venda FLOAT
 );
-GO
 ```
 
-## Driver JDBC SQL Server
+---
 
-Baixe o driver JDBC da Microsoft:
+# JDBC Resource Configurado no Payara
 
-https://learn.microsoft.com/sql/connect/jdbc/download-microsoft-jdbc-driver-for-sql-server
+## Connection Pool
 
-Copie o arquivo .jar para:
+```text
+lojaPool
+```
 
-glassfish6/glassfish/domains/domain1/lib/
+## JDBC Resources
 
-Depois reinicie o GlassFish.
+```text
+jdbc/loja__pm
+jdbc/loja__nontx
+```
 
-## Criar Connection Pool
+---
+
+# Deploy da Aplicação
+
+Após o build Maven, o EAR é gerado em:
+
+```text
+CadastroEE-ear/target/CadastroEE-ear-1.0.ear
+```
+
+Deploy realizado no Payara Server via:
 
 ```bash
-./asadmin create-jdbc-connection-pool \
---datasourceclassname=com.microsoft.sqlserver.jdbc.SQLServerDataSource \
---restype=javax.sql.DataSource \
---property user=sa:password=SUA_SENHA:DatabaseName=loja:ServerName=localhost:portNumber=1433:url="jdbc\:sqlserver\://localhost\:1433;databaseName=loja;encrypt=false;trustServerCertificate=true" \
-LojaPool
+asadmin deploy CadastroEE-ear-1.0.ear
 ```
 
-## Criar JDBC Resource
+---
 
-```bash
-./asadmin create-jdbc-resource \
---connectionpoolid LojaPool \
-jdbc/loja
-```
+# Acesso ao Sistema
 
-## Testar conexão
+## Aplicação Web
 
-```bash
-./asadmin ping-connection-pool LojaPool
-```
-
-## Compilar
-
-```bash
-mvn clean install
-```
-
-## Deploy
-
-```bash
-./asadmin deploy CadastroEE-ear/target/CadastroEE-ear-1.0.ear
-```
-
-## Acesso
-
+```text
 http://localhost:8080/CadastroEE-war/
+```
 
-ou
+## Painel Administrativo Payara
 
-http://localhost:8080/CadastroEE-war/ServletProdutoFC?acao=listar
+```text
+http://localhost:4848
+```
 
-## Funcionalidades
+---
 
-- Listar produtos
-- Inserir produtos
-- Alterar produtos
-- Excluir produtos
+# Aprendizados Aplicados no Projeto
 
-## Compatibilidade
+Durante o desenvolvimento foram aplicados conhecimentos sobre:
 
-- Java 17
-- Java 21
-- GlassFish 6
-- Java EE 8
+- Java EE corporativo
+- Arquitetura EAR/EJB/WAR
+- JPA e persistência
+- Configuração JDBC
+- Integração com SQL Server
+- Containerização com Docker
+- Deploy em servidor de aplicação
+- Troubleshooting e resolução de problemas de ambiente
+- Maven multi-módulo
+
+---
+
+# Observações Técnicas
+
+O projeto utiliza:
+- namespace `javax`
+- Payara Server 5
+- SQL Server em container Docker
+- EclipseLink como provider JPA
+
+A conexão JDBC foi configurada com:
+
+```text
+encrypt=false
+trustServerCertificate=true
+```
+
+para evitar conflitos SSL entre Payara e SQL Server em ambiente Docker.
+
+---
+
+# Autor
+
+Daniel Victor
+
+Estudante de Desenvolvimento Full Stack  
+Universidade Estácio de Sá
+
+---
+
+# Status do Projeto
+
+Projeto finalizado e funcional para fins acadêmicos.
